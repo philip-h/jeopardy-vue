@@ -11,7 +11,6 @@
   </head>
   <body>
     <div id="app">
-
       <!-------------------------------------------------------->
       <!---------------    Score Board:   ---------------------->
       <!-------------------------------------------------------->
@@ -60,6 +59,7 @@
 
         <md-dialog-content>
           {{ currentQuestion.question }}
+          {{ timer }}
         </md-dialog-content>
 
         <md-dialog-actions>
@@ -201,7 +201,9 @@
        scores: [0, 0],
        currentQuestion: {},
        modalActive: false,
-       turn: 0
+       turn: 0,
+       timer: 60,
+       interval: null
      },
 
   /********************************************************/
@@ -212,12 +214,21 @@
          this.modalActive = true
          this.currentQuestion = question
          event.currentTarget.classList.add('md-accent')
+         this.interval = setInterval(function() {
+           this.timer = this.timer - 1
+           if (this.timer <=0 ){
+               clearInterval(this.interval)
+               this.timer = 60
+           }
+         }.bind(this), 1000)
        },
   
        onClickDialogTeamName: function(index) {
          this.scores[index] += this.currentQuestion.worth        
          this.modalActive = false
          this.turn = (this.turn + 1) % this.teamNames.length
+         clearInterval(this.interval)
+         this.timer = 60
        },
   
        turnHighlight: function(index) {
