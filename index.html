@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,500,700,400italic|Material+Icons">
+    <link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/vue-material.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/theme/default.css">
+    <title>PY202 - Jeopardy</title>
+  </head>
+  <body>
+    <div id="app">
+
+      <!-------------------------------------------------------->
+      <!---------------    Score Board:   ---------------------->
+      <!-------------------------------------------------------->
+
+      <div class="scores">
+        <md-card v-for="(name, index) in teamNames" 
+          :key="index" 
+          :class="turnHighlight(index)">
+
+          <md-card-header>
+            <div class="md-title">{{ name }}</div>
+          </md-card-header>
+
+          <md-card-content>
+            {{ scores[index] }}
+          </md-card-content>
+
+        </md-card>
+      </div><!-- /scores -->
+
+      <!-------------------------------------------------------->
+      <!--------------- Grid of questions!!   ------------------>
+      <!-------------------------------------------------------->
+
+      <div class="jeopardy-container">
+
+        <span class="labels" v-for="c in cats">{{ c }}</span>
+
+        <md-card v-for="q in qs" 
+          :key="q.id" 
+          @click.native.once.stop="onClickJeopardyTile(q, $event)" 
+          md-with-hover>
+
+          <md-card-content>
+            {{ q.worth }}
+          </md-card-content>
+
+        </md-card>
+      </div><!-- /jeopardy board -->
+
+      <!-------------------------------------------------------->
+      <!--------------- Question Dialog!!     ------------------>
+      <!-------------------------------------------------------->
+
+      <md-dialog :md-active.sync="modalActive">
+
+        <md-dialog-content>
+          {{ currentQuestion.question }}
+        </md-dialog-content>
+
+        <md-dialog-actions>
+          <md-button class="md-raised md-primary" 
+            v-for="(name, index) in teamNames" 
+            :key="index" 
+            @click="onClickDialogTeamName(index)">
+              {{ name }}
+          </md-button>
+        </md-dialog-actions>
+
+      </md-dialog>
+    </div><!-- /#app -->
+  </body>
+</html>
+
+<!-------------------------------------------------------->
+<!--------------- Geneal CSS Rules      ------------------>
+<!-------------------------------------------------------->
+<style scoped>
+  #app {
+    padding: 10px;
+  }
+  .scores {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  .jeopardy-container {
+    width: 70%;
+    margin-left: 15%;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-gap: 20px;
+    justify-items: center;
+  }
+  .labels {
+    text-align: center;
+    font-size: 1.5em;
+  }
+</style>
+
+<!-------------------------------------------------------->
+<!--------------- Vue Material CSS Rules------------------>
+<!-------------------------------------------------------->
+<style scoped>
+  .md-card {
+    text-align: center;
+  }
+  .md-card > .md-card-content {
+    font-size: 3em;
+  }
+  .scores > .md-card {
+    width: 300px;
+    margin: 5px;
+  }
+  .jeopardy-container > .md-card {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 130px;  
+    width: 130px;
+  }
+  .jeopardy-container > .md-card:hover {
+    cursor: pointer;
+  }
+  .md-dialog-content {
+    font-size: 3em;
+  }
+</style>
+
+<!-------------------------------------------------------->
+<!-------------- VueJS Imports and Stuff    -------------->
+<!-------------------------------------------------------->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/vue"></script>
+<script src="https://unpkg.com/vue-material@beta"></script>
+<script type="text/javascript">
+  /********************************************************/
+  /*                Data for the Questions                */
+  /********************************************************/
+   var cats = ['Sprites', 'Objects', 'Python', 'PixelPad', 'Video Games', 'Brain Teasers']
+  
+   var qs = [
+   { id:1, question:"This is a question?", worth:200},
+   { id:2, question:"", worth:200},
+   { id:3, question:"", worth:200},
+   { id:4, question:"", worth:200},
+   { id:5, question:"", worth:200},
+   { id:6, question:"", worth:200},
+   
+  
+   { id:7, question:"", worth:400},
+   { id:8, question:"", worth:400},
+   { id:9, question:"", worth:400},
+   { id:10, question:"", worth:400},
+   { id:11, question:"", worth:400},
+   { id:12, question:"", worth:400},
+  
+   { id:13, question:"", worth:600},
+   { id:14, question:"", worth:600},
+   { id:15, question:"", worth:600},
+   { id:16, question:"", worth:600},
+   { id:17, question:"", worth:600},
+   { id:18, question:"", worth:600},
+  
+   { id:19, question:"", worth:800},
+   { id:20, question:"", worth:800},
+   { id:21, question:"", worth:800},
+   { id:22, question:"", worth:800},
+   { id:23, question:"", worth:800},
+   { id:24, question:"", worth:800},
+  
+   { id:25, question:"", worth:1000},
+   { id:26, question:"", worth:1000},
+   { id:27, question:"", worth:1000},
+   { id:28, question:"", worth:1000},
+   { id:29, question:"", worth:1000},
+   { id:30, question:"", worth:1000}
+   ]
+
+  /********************************************************/
+  /*                Vue JS Initialization                 */
+  /********************************************************/
+
+  
+   Vue.use(VueMaterial.default)
+  
+   new Vue({
+     el: '#app',
+   /********************************************************/
+   /*    Vue JS State! (Change this if need be)            */
+   /********************************************************/
+
+     data: {
+       qs: qs,
+       cats: cats,
+       teamNames: ["Team1", "The Aligators"],
+       scores: [0, 0],
+       currentQuestion: {},
+       modalActive: false,
+       turn: 0
+     },
+
+  /********************************************************/
+  /*               Vue JS Methods!                        */
+  /********************************************************/
+     methods: {
+       onClickJeopardyTile: function(question, event) {
+         this.modalActive = true
+         this.currentQuestion = question
+         event.currentTarget.classList.add('md-accent')
+       },
+  
+       onClickDialogTeamName: function(index) {
+         this.scores[index] += this.currentQuestion.worth        
+         this.modalActive = false
+         this.turn = (this.turn + 1) % this.teamNames.length
+       },
+  
+       turnHighlight: function(index) {
+           return { "md-primary" : index === this.turn } 
+       }
+  
+     },
+  
+  })
+</script>
+
