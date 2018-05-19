@@ -1,134 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,500,700,400italic|Material+Icons">
-    <link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/vue-material.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/theme/default.css">
-    <title>PY202 - Jeopardy</title>
-  </head>
-  <body>
-    <div id="app">
-      <!-------------------------------------------------------->
-      <!---------------    Score Board:   ---------------------->
-      <!-------------------------------------------------------->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,500,700,400italic|Material+Icons">
+  <link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/vue-material.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/theme/default.css">
+  <title>PY202 - Jeopardy</title>
+</head>
+<body>
+  <div id="app">
+    <!-------------------------------------------------------->
+    <!---------------    Score Board:   ---------------------->
+    <!-------------------------------------------------------->
 
-      <div class="scores">
-        <md-card v-for="(name, index) in teamNames" 
-          :key="index" 
-          :class="turnHighlight(index)">
+    <div class="scores">
+      <md-card v-for="(name, index) in teamNames"
+      :key="index"
+      :class="turnHighlight(index)">
 
-          <md-card-header>
-            <div class="md-title">{{ name }}</div>
-          </md-card-header>
+      <md-card-header>
+        <div class="md-title">{{ name }}</div>
+      </md-card-header>
 
-          <md-card-content>
-            {{ scores[index] }}
-          </md-card-content>
+      <md-card-content>
+        {{ scores[index] }}
+      </md-card-content>
 
-        </md-card>
-      </div><!-- /scores -->
+    </md-card>
+  </div><!-- /scores -->
 
-      <!-------------------------------------------------------->
-      <!--------------- Grid of questions!!   ------------------>
-      <!-------------------------------------------------------->
+  <!-------------------------------------------------------->
+  <!--------------- Grid of questions!!   ------------------>
+  <!-------------------------------------------------------->
 
-      <div class="jeopardy-container">
+  <div class="jeopardy-container">
 
-        <span class="labels" v-for="c in cats">{{ c }}</span>
+    <span class="labels" v-for="c in cats">{{ c }}</span>
 
-        <md-card v-for="q in qs" 
-          :key="q.id" 
-          @click.native.once.stop="onClickJeopardyTile(q, $event)" 
-          md-with-hover>
+    <md-card v-for="q in qs"
+    :key="q.id"
+    @click.native.once.stop="onClickJeopardyTile(q, $event)"
+    md-with-hover>
 
-          <md-card-content>
-            {{ q.worth }}
-          </md-card-content>
+    <md-card-content>
+      {{ q.worth }}
+    </md-card-content>
 
-        </md-card>
-      </div><!-- /jeopardy board -->
+  </md-card>
+</div><!-- /jeopardy board -->
 
-      <!-------------------------------------------------------->
-      <!--------------- Question Dialog!!     ------------------>
-      <!-------------------------------------------------------->
+<!-------------------------------------------------------->
+<!--------------- Question Dialog!!     ------------------>
+<!-------------------------------------------------------->
 
-      <md-dialog :md-active.sync="modalActive">
+<md-dialog :md-active.sync="modalActive"
+  :md-close-on-esc="false"
+  :md-click-outside-to-close="false">
 
-        <md-dialog-content>
-          {{ currentQuestion.question }}
-          {{ timer }}
-        </md-dialog-content>
+  <md-dialog-content>
+    {{ currentQuestion.question }}
+    {{ timer }}
+  </md-dialog-content>
 
-        <md-dialog-actions>
-          <md-button class="md-raised md-primary" 
-            v-for="(name, index) in teamNames" 
-            :key="index" 
-            @click="onClickDialogTeamName(index)">
-              {{ name }}
-          </md-button>
-        </md-dialog-actions>
+  <md-dialog-actions>
+    <md-button class="md-raised md-primary"
+    v-for="(name, index) in teamNames"
+    :key="index"
+    @click="onClickDialogTeamName(index)">
+    {{ name }}
+  </md-button>
+</md-dialog-actions>
 
-      </md-dialog>
-    </div><!-- /#app -->
-  </body>
+</md-dialog>
+</div><!-- /#app -->
+</body>
 </html>
 
 <!-------------------------------------------------------->
 <!--------------- Geneal CSS Rules      ------------------>
 <!-------------------------------------------------------->
 <style scoped>
-  #app {
-    padding: 10px;
-  }
-  .scores {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 10px;
-  }
-  .jeopardy-container {
-    width: 70%;
-    margin-left: 15%;
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    grid-gap: 20px;
-    justify-items: center;
-  }
-  .labels {
-    text-align: center;
-    font-size: 1.5em;
-  }
+#app {
+  padding: 10px;
+}
+.scores {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.jeopardy-container {
+  width: 70%;
+  margin-left: 15%;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-gap: 20px;
+  justify-items: center;
+}
+.labels {
+  text-align: center;
+  font-size: 1.5em;
+}
 </style>
 
 <!-------------------------------------------------------->
 <!--------------- Vue Material CSS Rules------------------>
 <!-------------------------------------------------------->
 <style scoped>
-  .md-card {
-    text-align: center;
-  }
-  .md-card > .md-card-content {
-    font-size: 3em;
-  }
-  .scores > .md-card {
-    width: 300px;
-    margin: 5px;
-  }
-  .jeopardy-container > .md-card {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    height: 130px;  
-    width: 130px;
-  }
-  .jeopardy-container > .md-card:hover {
-    cursor: pointer;
-  }
-  .md-dialog-content {
-    font-size: 3em;
-  }
+.md-card {
+  text-align: center;
+}
+.md-card > .md-card-content {
+  font-size: 3em;
+}
+.scores > .md-card {
+  width: 300px;
+  margin: 5px;
+}
+.jeopardy-container > .md-card {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 130px;
+  width: 130px;
+}
+.jeopardy-container > .md-card:hover {
+  cursor: pointer;
+}
+
+.md-dialog-content {
+  font-size: 3em;
+  line-height: 1;
+}
 </style>
 
 <!-------------------------------------------------------->
@@ -138,105 +142,104 @@
 <script src="https://unpkg.com/vue"></script>
 <script src="https://unpkg.com/vue-material@beta"></script>
 <script type="text/javascript">
-  /********************************************************/
-  /*                Data for the Questions                */
-  /********************************************************/
-   var cats = ['Sprites', 'Objects', 'Python', 'PixelPad', 'Video Games', 'Brain Teasers']
-  
-   var qs = [
-   { id:1, question:"This is a question?", worth:200},
-   { id:2, question:"", worth:200},
-   { id:3, question:"", worth:200},
-   { id:4, question:"", worth:200},
-   { id:5, question:"", worth:200},
-   { id:6, question:"", worth:200},
-   
-  
-   { id:7, question:"", worth:400},
-   { id:8, question:"", worth:400},
-   { id:9, question:"", worth:400},
-   { id:10, question:"", worth:400},
-   { id:11, question:"", worth:400},
-   { id:12, question:"", worth:400},
-  
-   { id:13, question:"", worth:600},
-   { id:14, question:"", worth:600},
-   { id:15, question:"", worth:600},
-   { id:16, question:"", worth:600},
-   { id:17, question:"", worth:600},
-   { id:18, question:"", worth:600},
-  
-   { id:19, question:"", worth:800},
-   { id:20, question:"", worth:800},
-   { id:21, question:"", worth:800},
-   { id:22, question:"", worth:800},
-   { id:23, question:"", worth:800},
-   { id:24, question:"", worth:800},
-  
-   { id:25, question:"", worth:1000},
-   { id:26, question:"", worth:1000},
-   { id:27, question:"", worth:1000},
-   { id:28, question:"", worth:1000},
-   { id:29, question:"", worth:1000},
-   { id:30, question:"", worth:1000}
-   ]
+/********************************************************/
+/*                Data for the Questions                */
+/********************************************************/
+var cats = ['Sprites', 'Objects', 'Python', 'PixelPad', 'Fortnite', 'Brain Teasers']
 
+var qs = [
+
+  { id:0, question:"What is a sprite?", worth:200 }, // a picture
+  { id:5, question:"What is the difference between a sprite and an object?", worth:200 },
+  { id:10, question:"What is a variable?", worth:200 },
+  { id:15, question:"What programming language does pixel pad use?", worth:200 }, // python
+  { id:20, question:"Can you make fortnite in pixel pad?", worth:200 }, // no
+  { id:25, question:"What gets wetter as it dries?", worth:200 }, // a towel
+
+  { id:1, question:"What is the difference between a sprite and a sprite sheet?", worth:400 }, // number of pictures
+  { id:6, question:"What is the code to create a new object?", worth:400 }, // object_new
+  { id:11, question:"How is a comment written in python?", worth:400 }, // #
+  { id:16, question:"What fruit does the forum have in its name?", worth:400 }, // kiwi
+  { id:21, question:"How many players participate in a battle royale?", worth:400 }, // 100
+  { id:26, question:"Which weighs more, a pound of feathers or a pound of bricks?", worth:400 }, // same
+
+  { id:2, question:"What is the code to bind a sprite to an object?", worth:600 }, // sprite = sprite_new('spr_...')
+  { id:7, question:"What is the code to move an object named player to the x coordinate of 200?", worth:600 }, // player.x = 200
+  { id:12, question:"Why are comments used in python?", worth:600 },
+  { id:17, question:"On a scale from 1 to 10, how helpful are most errors in pixel pad?", worth:600 }, // 1...
+  { id:22, question:"What legendary item is used for camoflauge?", worth:600 }, // a bush
+  { id:27, question:"How many months have 28 days?", worth:600 }, // all of them
+
+  { id:3, question:"What is the code to change the width and height of a sprite?", worth:800 }, // obj(or self).sprite_width = 2...
+  { id:8, question:"How do you check if two objects are colliding?", worth:800 },
+  { id:13, question:"What is an if statement used for in python?", worth:800 },
+  { id:18, question:"What is a function that is in pixel pad but not in python?", worth:800 }, // key_is_pressed(), collision_check() ...
+  { id:23, question:"What are the 3 building materials?", worth:800 }, // wood, brick and medal
+  { id:28, question:"Feed me and it will give me life. Give me a drink and I will die. What am I?", worth:800 }, // Fire
+
+  { id:4, question:"Explain the process of animating a sprite.", worth:1000 }, // animation_new and animation_set
+  { id:9, question:"How many ways are there to create a new object in pixel pad?", worth:1000 }, // 2 (new_instance and object_new)
+  { id:14, question:"What does a for loop do?", worth:1000 },
+  { id:19, question:"Explain how you import a sprite into pixel pad!", worth:1000 }, // basically find an image and click the green + button next to spritess label
+  { id:24, question:"What is the name of the tier 100 skin?", worth:1000 }, // omega skin
+  { id:29, question:"The person who buys me doesn't need me, the person who makes me doesn't want me, and the person who uses me can't appreciate me.", worth:1000 } // a coffin
+]
+
+/********************************************************/
+/*                Vue JS Initialization                 */
+/********************************************************/
+
+
+Vue.use(VueMaterial.default)
+
+new Vue({
+  el: '#app',
   /********************************************************/
-  /*                Vue JS Initialization                 */
+  /*    Vue JS State! (Change this if need be)            */
   /********************************************************/
 
-  
-   Vue.use(VueMaterial.default)
-  
-   new Vue({
-     el: '#app',
-   /********************************************************/
-   /*    Vue JS State! (Change this if need be)            */
-   /********************************************************/
-
-     data: {
-       qs: qs,
-       cats: cats,
-       teamNames: ["Team1", "The Aligators"],
-       scores: [0, 0],
-       currentQuestion: {},
-       modalActive: false,
-       turn: 0,
-       timer: 60,
-       interval: null
-     },
+  data: {
+    qs: qs,
+    cats: cats,
+    teamNames: ["Team1", "The Aligators"],
+    scores: [0, 0],
+    currentQuestion: {},
+    modalActive: false,
+    turn: 0,
+    timer: 60,
+    interval: null
+  },
 
   /********************************************************/
   /*               Vue JS Methods!                        */
   /********************************************************/
-     methods: {
-       onClickJeopardyTile: function(question, event) {
-         this.modalActive = true
-         this.currentQuestion = question
-         event.currentTarget.classList.add('md-accent')
-         this.interval = setInterval(function() {
-           this.timer = this.timer - 1
-           if (this.timer <=0 ){
-               clearInterval(this.interval)
-               this.timer = 60
-           }
-         }.bind(this), 1000)
-       },
-  
-       onClickDialogTeamName: function(index) {
-         this.scores[index] += this.currentQuestion.worth        
-         this.modalActive = false
-         this.turn = (this.turn + 1) % this.teamNames.length
-         clearInterval(this.interval)
-         this.timer = 60
-       },
-  
-       turnHighlight: function(index) {
-           return { "md-primary" : index === this.turn } 
-       }
-  
-     },
-  
-  })
-</script>
+  methods: {
+    onClickJeopardyTile: function(question, event) {
+      this.modalActive = true
+      this.currentQuestion = question
+      event.currentTarget.classList.add('md-accent')
+      this.interval = setInterval(function() {
+        this.timer = this.timer - 1
+        if (this.timer <=0 ){
+          clearInterval(this.interval)
+          this.timer = 60
+        }
+      }.bind(this), 1000)
+    },
 
+    onClickDialogTeamName: function(index) {
+      this.scores[index] += this.currentQuestion.worth
+      this.modalActive = false
+      this.turn = (this.turn + 1) % this.teamNames.length
+      clearInterval(this.interval)
+      this.timer = 60
+    },
+
+    turnHighlight: function(index) {
+      return { "md-primary" : index === this.turn }
+    }
+
+  },
+
+})
+</script>
