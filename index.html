@@ -55,7 +55,7 @@
 <!--------------- Question Dialog!!     ------------------>
 <!-------------------------------------------------------->
 
-<md-dialog :md-active.sync="modalActive"
+<md-dialog :md-active.sync="showQuestionDialog"
   :md-close-on-esc="false"
   :md-click-outside-to-close="false">
 
@@ -74,6 +74,20 @@
 </md-dialog-actions>
 
 </md-dialog>
+
+<md-dialog :md-active.sync="showWinnerDialog">
+
+  <md-dialog-content>
+    The winner is <strong>{{ winner }}</strong>!!
+  </md-dialog-content>
+
+  <md-dialog-actions>
+    <md-button class="md-raised md-primary" @click="showWinnerDialog = false">Done!</md-button>
+</md-dialog-actions>
+
+</md-dialog>
+
+
 </div><!-- /#app -->
 </body>
 </html>
@@ -201,13 +215,17 @@ new Vue({
   data: {
     qs: qs,
     cats: cats,
-    teamNames: ["Team1", "The Aligators"],
+    teamNames: ["Team1", "Team2"],
     scores: [0, 0],
     currentQuestion: {},
-    modalActive: false,
+    showQuestionDialog: false,
+    showWinnerDialog: false,
     turn: 0,
     timer: 60,
-    interval: null
+    interval: null,
+    numClicks: 0,
+    winner: ""
+
   },
 
   /********************************************************/
@@ -215,7 +233,7 @@ new Vue({
   /********************************************************/
   methods: {
     onClickJeopardyTile: function(question, event) {
-      this.modalActive = true
+      this.showQuestionDialog = true
       this.currentQuestion = question
       event.currentTarget.classList.add('md-accent')
       this.interval = setInterval(function() {
@@ -229,10 +247,16 @@ new Vue({
 
     onClickDialogTeamName: function(index) {
       this.scores[index] += this.currentQuestion.worth
-      this.modalActive = false
+      this.showQuestionDialog = false
       this.turn = (this.turn + 1) % this.teamNames.length
       clearInterval(this.interval)
       this.timer = 60
+      this.numClicks += 1
+      if (this.numClicks == 30) {
+        this.winner = this.teamNames[this.scores.indexOf(Math.max(...this.scores))]
+        this.showWinnerDialog = true
+        this.numClicks = 0
+      }
     },
 
     turnHighlight: function(index) {
